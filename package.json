@@ -1,0 +1,24 @@
+{
+  "name": "b2brocker",
+  "version": "1.0.0",
+  "description": "b2brocker subscription app",
+  "main": "server.js",
+  "scripts": {
+    "start": "NODE_ENV=prod nodemon server.js",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "jest": "^29.3.1",
+    "mongodb": "^4.13.0",
+    "mongoose": "^6.8.4",
+    "nodemon": "^2.0.20",
+    "socket.io": "^4.5.4",
+    "socket.io-client": "^4.5.4",
+    "winston": "^3.8.2"
+  }
+}

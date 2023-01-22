@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>App</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    </head>
+
+
+    <body>
+
+        <div class="container">
+            <div class="container-fluid">
+                <input type="hidden" id="id">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3">
+                <div class="card mt-5" >
+                    <div class="card-body">
+                        <h5 class="card-title">Subscription</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Subscribe a channel</h6>
+                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+                            content.</p>
+
+                            <p id="msg"></p>
+                            
+                        <a href="#" id="btn-sub" class="card-link">Subscribe</a>
+                        <a href="#" id="ele-count" class="card-link"></a>
+                        <!-- <a href="#" id="ele-delete" class="card-link">Delete</a>
+                        <a href="#" id="btn-count" class="card-link">Get Count</a> -->
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+ 
+        <script src="https://cdn.socket.io/4.4.0/socket.io.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script> 
+            
+             
+             (function(){
+                var socket = io(); 
+                const getElement = (id) =>{
+                   return document.getElementById(id)
+                } 
+
+                const setMessage = (msg) => {
+                    getElement('msg').innerText = msg
+                }
+
+                const setCount = (count) =>{
+                    getElement('ele-count').innerText = `${count} Subscribers`
+                }
+
+                socket.emit('CountSubscriber', (res) => {
+                    setCount(res.count)
+                 })
+
+                // Subscription function
+                function Subscribe(socket, callBack){ 
+                    const id = getElement('id').value 
+                    if (id !== '') { 
+                        const req = {
+                            type: 'Subscription',
+                            status: 'Subscription',
+                            updatedAt: new Date(),
+                            _id: id
+                        } 
+                        socket.emit('Subscribe', req, (res) => {
+                            if (res.message === 'Subscribed') {
+                                btn.innerText = 'Unsubscribe'
+                            } else {
+                                btn.innerText = 'Subscribe'
+                            }
+                            callBack(res)
+                        })
+                    }
+                }
+
+                // Unsubscription fuction
+                function UnSubscribe(socket, callBack) {
+                     const id = getElement('id').value
+                     const req = {
+                         type: 'UnSubscription',
+                         status: 'UnSubscription',
+                         updatedAt: new Date(),
+                         _id: id
+                     }
+                     socket.emit('UnSubscribe', req, (res) => {
+                         if (res.message === 'Unsubscribed') {
+                             btn.innerText = 'Unsubscribe'
+                         } else {
+                             btn.innerText = 'Subscribe'
+                         }
+                         callBack(res);
+                         
+                     })
+                 }
+
+                // scbscribe and unsubscibe toggle
+                const btn = getElement('btn-sub');
+                btn.addEventListener('click', (e) => {
+                     setMessage('');
+                    if (e.target.innerText === 'Subscribe') { 
+                        Subscribe(socket, (res) => {
+                            setMessage(res.message);
+                            setCount(res.count);
+                            
+                        })
+                    } else {
+                        UnSubscribe(socket, (res) => {
+                            debugger
+                            setMessage(res.message)
+                            setCount(res.count);
+                        })
+                    }  
+                })
+                
+                //socket.emit('Delete', ()=>{})
+
+                 
+                // Create a client
+                socket.emit('create', {
+                    _id: '',
+                     type: "",
+                     status: ""
+                }, (insertedId) => { 
+                    getElement('id').value = insertedId; 
+                }) 
+
+             })(); 
+        </script>
+    </body>
+</html>
